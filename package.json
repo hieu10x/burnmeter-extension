@@ -8,7 +8,9 @@
     "test": "node --test",
     "zip": "sh scripts/zip.sh",
     "icons": "python3 scripts/make-icons.py",
-    "e2e": "node scripts/e2e.mjs"
+    "e2e": "node scripts/e2e.mjs",
+    "e2e:web": "node scripts/e2e-web.mjs",
+    "build:web": "sh scripts/build-web.sh"
   },
   "engines": {
     "node": ">=20"

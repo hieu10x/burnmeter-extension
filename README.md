@@ -1,4 +1,42 @@
-# Burnmeter for Chrome
+# Burnmeter AI Seat Audit
+
+A free, local audit for whoever pays for the team's AI coding tools. Drop in the exports you already have from **Cursor**, **GitHub Copilot** and **Claude** (plus [burnmeter](https://github.com/hieu10x/burnmeter) exports for Claude Code / Codex on API keys) and see:
+
+- what each engineer costs per month across all tools (seat + usage billed on top)
+- seats nobody uses
+- people paying for two or three tools
+- how concentrated usage charges are, and which models drive them
+
+There's a one-page report to print or save as PDF, and a CSV for finance.
+
+**Status:** the web page (`web/audit/`, served at burnmeter.pages.dev/audit) works today. A Chrome extension that pulls the Cursor numbers through the Admin API directly (Cursor's API doesn't allow calls from web pages) comes next.
+
+## Inputs
+
+| Vendor | File | How to get it |
+|---|---|---|
+| Cursor (Teams/Enterprise) | `/teams/members` + `/teams/spend` JSON | Admin API key, two `curl` commands (shown on the page) |
+| GitHub Copilot | usage report CSV, seats JSON | Billing and licensing → Usage; `gh api /orgs/ORG/copilot/billing/seats --paginate --slurp` |
+| Claude Team/Enterprise | spend report CSV | claude.ai → Analytics → spend report → Export CSV |
+| Claude Code / Codex on API keys | burnmeter export | `npx burnmeter --export me.json --as you@company.com` |
+
+## Privacy
+
+Files are read in the browser and never uploaded. There is no `fetch` in the page code, and the page's Content-Security-Policy blocks network requests except Cloudflare's anonymous page-view beacon. Settings (prices, GitHub name → email mapping) are kept in your browser's localStorage; the files aren't.
+
+## Develop
+
+```sh
+npm test                                     # unit tests (Node 20+, no dependencies)
+npm run build:web                            # dist/web/audit, ready for Cloudflare Pages
+npm i && CHROME=/path/to/chrome npm run e2e:web   # sample report, real upload, CSV, phone width, no foreign requests
+```
+
+The audit logic lives in `src/audit/` (pure ES modules, shared by the page and the coming extension). `src/audit/sample.js` is a synthetic team in the exact export formats; the page's "Try with sample data" and the tests both use it.
+
+---
+
+## Earlier: personal spend extension (0.0.1, frozen)
 
 Your AI coding spend this month, as one number: **Cursor**, read from your own Cursor dashboard, plus **Claude Code and Codex**, imported from the [burnmeter CLI](https://github.com/hieu10x/burnmeter). Set a monthly budget and get a notification at 80% and 100%.
 

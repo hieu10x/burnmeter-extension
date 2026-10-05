@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Files are read in the browser only. This policy stops the page from sending data anywhere
+     except Cloudflare's anonymous page-view beacon. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src https://cloudflareinsights.com; img-src 'self' data:; style-src 'self'; form-action 'none'; base-uri 'none'">
+<title>AI Seat Audit · Burnmeter</title>
+<meta name="description" content="Free, local audit of your team's AI coding tools: cost per engineer across Cursor, GitHub Copilot and Claude, idle seats, and people paying for several tools. Your files never leave the browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%227%22 fill=%22%233b5bdb%22/%3E%3Cpath d=%22M9 22V10h8a4 4 0 0 1 0 8h-8%22 stroke=%22white%22 stroke-width=%223%22 fill=%22none%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="audit.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/?utm_source=audit&amp;utm_medium=web&amp;utm_campaign=audit_header">Burnmeter</a>
+    <a class="quiet" href="https://github.com/hieu10x/burnmeter-extension" rel="noopener">Source code</a>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Free · runs in your browser</div>
+    <h1>Audit your team's AI coding seats in 5 minutes</h1>
+    <p class="sub">Drop in the exports you already have from Cursor, GitHub Copilot and Claude. See what each engineer costs across all tools, which seats nobody uses, and who pays for three tools. Nothing to install on developers' machines.</p>
+    <div class="actions">
+      <button id="sample" type="button">Try with sample data</button>
+      <a class="button secondary" href="#files">Use my files</a>
+    </div>
+    <p class="fine">Your files never leave this page: no upload, no account. The page's security policy blocks it from sending data anywhere except an anonymous page-view count.</p>
+  </section>
+
+  <section id="files">
+    <h2>1. Get your files <span class="muted">(any of them; more files give a fuller picture)</span></h2>
+    <div class="grid two">
+      <div class="card">
+        <h3>Cursor <span class="tag">Teams or Enterprise admin</span></h3>
+        <p>Create an Admin API key at cursor.com/dashboard → Settings → Admin API keys, then run:</p>
+        <pre><code>curl -s -u KEY: https://api.cursor.com/teams/members &gt; cursor-members.json
+curl -s -u KEY: -X POST https://api.cursor.com/teams/spend \
+  -H 'Content-Type: application/json' -d '{"pageSize":500}' &gt; cursor-spend.json</code></pre>
+        <p class="fine">Delete the key afterwards if you like. If <code>cursor-spend.json</code> says <code>"totalPages": 2</code> or more, repeat with <code>"page":2</code> and add that file too.</p>
+      </div>
+      <div class="card">
+        <h3>GitHub Copilot <span class="tag">org owner or billing manager</span></h3>
+        <p><b>Usage report:</b> Organization settings → Billing and licensing → Usage → download the Copilot usage report (CSV).</p>
+        <p><b>Seats</b>, to find seats nobody uses (needs the <a href="https://cli.github.com" rel="noopener">gh CLI</a>):</p>
+        <pre><code>gh api /orgs/YOUR-ORG/copilot/billing/seats \
+  --paginate --slurp &gt; copilot-seats.json</code></pre>
+      </div>
+      <div class="card">
+        <h3>Claude <span class="tag">Team or Enterprise owner</span></h3>
+        <p>claude.ai → your initials → Analytics → spend report → pick the last 30 days → Export CSV.</p>
+        <p class="fine">Covers Chat, Claude Code and the other Claude products, per person and model.</p>
+      </div>
+      <div class="card">
+        <h3>Claude Code / Codex on API keys</h3>
+        <p>Each developer runs this and sends you the file (no prompts, code or paths in it):</p>
+        <pre><code>npx burnmeter --export me.json --as their@company.com</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Drop them here</h2>
+    <label class="drop" id="drop">
+      <input id="input" type="file" multiple accept=".json,.csv,application/json,text/csv">
+      <span><b>Drop files</b> or click to choose. JSON and CSV, as many as you have.</span>
+    </label>
+    <ul id="filelist" class="filelist"></ul>
+  </section>
+
+  <section id="report" hidden>
+    <div id="samplebanner" class="banner" hidden>Showing <b>synthetic sample data</b> for a made-up team (example.com). <button type="button" class="link" id="clear-sample">Clear it</button> and drop your own files.</div>
+    <h2>3. Your audit <span class="muted" id="report-sub"></span></h2>
+    <div class="tiles" id="tiles"></div>
+    <ul class="findings" id="findings"></ul>
+
+    <div class="cols">
+      <div>
+        <h3>By tool</h3>
+        <div class="scroll"><table id="bytool"></table></div>
+      </div>
+      <div>
+        <h3>Seats nobody uses</h3>
+        <div class="scroll"><table id="idle"></table></div>
+      </div>
+    </div>
+
+    <h3>Per person <span class="muted">(estimated monthly cost: seat + usage billed on top)</span></h3>
+    <div class="scroll"><table id="people"></table></div>
+
+    <div class="actions no-print">
+      <button type="button" id="csv">Download CSV</button>
+      <button type="button" class="secondary" id="print">Print or save as PDF</button>
+    </div>
+
+    <details class="no-print" id="settings">
+      <summary>Prices, idle window and GitHub names</summary>
+      <p class="fine">List prices per month (checked Oct 2026). Change them to match your invoice: annual plans are cheaper, and the exports don't say which Cursor or Claude seats are Premium.</p>
+      <div class="form">
+        <label>Cursor seat $<input type="number" min="0" step="1" data-price="cursor"></label>
+        <label>Copilot Business $<input type="number" min="0" step="1" data-price="copilotBusiness"></label>
+        <label>Copilot Enterprise $<input type="number" min="0" step="1" data-price="copilotEnterprise"></label>
+        <label>Claude seat $<input type="number" min="0" step="1" data-price="claude"></label>
+        <label>Idle after (days)<input type="number" min="1" step="1" id="idleDays"></label>
+      </div>
+      <div id="mapping"></div>
+    </details>
+
+    <div class="method">
+      <h3>How this is calculated</h3>
+      <ul id="notes"></ul>
+    </div>
+    <p class="printonly">Made with Burnmeter AI Seat Audit: free, runs in your browser. burnmeter.pages.dev/audit</p>
+  </section>
+
+  <section class="cta no-print">
+    <div class="card">
+      <h3>Want this every Monday, without exporting anything?</h3>
+      <p>The Burnmeter team pilot keeps history, posts a weekly Slack digest and warns you before a budget is blown, across Cursor, Copilot and Claude.</p>
+      <a class="button" href="/?utm_source=audit&amp;utm_medium=web&amp;utm_campaign=audit_cta#join">Join the team pilot</a>
+    </div>
+    <div class="card" id="benchmark" hidden>
+      <h3>How does your team compare?</h3>
+      <p>Share 5 numbers from this audit (no names or emails) and get the anonymised benchmark when 20 teams have answered.</p>
+      <a class="button secondary" id="benchmark-link" href="#" rel="noopener" target="_blank">Add my numbers</a>
+    </div>
+  </section>
+
+  <footer>Burnmeter is an early-stage, open-source project. This page is free and makes no use of your data. Prices are list prices and may differ from your invoice.</footer>
+</div>
+</body>
+</html>
