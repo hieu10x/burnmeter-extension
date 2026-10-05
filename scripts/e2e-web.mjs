@@ -35,7 +35,7 @@ try {
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("request", (r) => { if (!r.url().startsWith(ORIGIN) && !r.url().startsWith("data:") && !r.url().startsWith("blob:")) foreign.push(r.url()); });
-  await page.goto(`${ORIGIN}/audit/`, { waitUntil: "networkidle0" });
+  await page.goto(`${ORIGIN}/audit/?pid=s03-099&utm_source=email&utm_campaign=s03-b2`, { waitUntil: "networkidle0" });
   check(await page.$eval("#report", (e) => e.hidden), "report hidden before any file");
 
   // Sample data: same numbers as the unit test (dates are relative, so they don't drift).
@@ -63,6 +63,8 @@ try {
   const kinds = await page.$$eval("#filelist li", (els) => els.map((e) => e.children[1].textContent));
   check(kinds.filter((k) => !k.startsWith("Unrecognised")).length === 6 && kinds.some((k) => k.startsWith("Unrecognised CSV")), "6 files recognised, junk rejected with a message");
   check(await page.$eval("#samplebanner", (e) => e.hidden), "sample banner gone after real files");
+  const bench = await page.$eval("#benchmark-link", (e) => (e.closest("[hidden]") ? null : e.href));
+  check(bench?.startsWith("https://tally.so/r/") && bench.includes("engineers=10") && bench.includes("pid=s03-099") && bench.includes("utm_campaign=s03-b2"), `benchmark link for real data carries numbers and pid (${bench})`);
 
   // CSV download.
   const cdp = await page.createCDPSession();

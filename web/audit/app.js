@@ -6,7 +6,7 @@ import { buildAudit, auditCsv, DEFAULT_SETTINGS, TOOLS, TOOL_LABELS } from "./li
 import { sampleFiles } from "./lib/sample.js";
 
 // Tally form for the anonymised benchmark; empty hides the card.
-const BENCHMARK_FORM = "";
+const BENCHMARK_FORM = "44gK9r";
 const SETTINGS_KEY = "burnmeter-audit-settings";
 
 const $ = (id) => document.getElementById(id);
@@ -145,7 +145,14 @@ function renderBenchmark(a) {
   card.hidden = !(BENCHMARK_FORM && real && a.summary.engineers);
   if (card.hidden) return;
   const s = a.summary;
-  const q = new URLSearchParams({ engineers: s.engineers, tools: Object.keys(a.byTool).join("+"), monthly_total: Math.round(s.total), idle_cost: Math.round(s.idleCost), overlap_people: s.overlapPeople, utm_source: "audit", utm_medium: "web", utm_campaign: "benchmark" });
+  // Pass the outreach link's pid/utm through, so an answer can be tied to the email that sent it.
+  const from = new URLSearchParams(location.search);
+  const q = new URLSearchParams({
+    engineers: s.engineers, tools: Object.keys(a.byTool).join("+"), monthly_total: Math.round(s.total),
+    idle_cost: Math.round(s.idleCost), overlap_people: s.overlapPeople,
+    utm_source: from.get("utm_source") || "audit", utm_medium: from.get("utm_medium") || "web", utm_campaign: from.get("utm_campaign") || "benchmark",
+  });
+  if (from.get("pid")) q.set("pid", from.get("pid"));
   $("benchmark-link").href = `https://tally.so/r/${BENCHMARK_FORM}?${q}`;
 }
 
