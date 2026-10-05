@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Burnmeter settings</title>
+  <link rel="stylesheet" href="../ui.css">
+  <style>main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }</style>
+</head>
+<body>
+  <main>
+    <h1>Burnmeter settings</h1>
+
+    <h2>Monthly budget</h2>
+    <div class="row">
+      <span>$</span><input type="number" id="budget" min="0" step="10" placeholder="none">
+      <button id="saveBudget">Save</button>
+      <span id="budgetMsg" class="small muted"></span>
+    </div>
+    <p class="small muted">You get a notification at 80% and 100% of this, based on the latest numbers the extension has seen.</p>
+
+    <h2>What the extension has seen</h2>
+    <p class="small muted">
+      Pages and JSON responses captured on the vendor dashboards you opened, shown as
+      <strong>key names and types only</strong>. Values (amounts, emails, ids) are never stored here,
+      so this is safe to copy into a bug report.
+    </p>
+    <div class="row"><button id="copy">Copy</button><button id="refresh">Refresh</button><span id="copyMsg" class="small muted"></span></div>
+    <pre id="discovery">Nothing captured yet. Open your Cursor dashboard usage tab, then press Refresh.</pre>
+
+    <h2>Data</h2>
+    <p class="small muted">Everything is stored only in this browser (chrome.storage.local). The extension makes no network requests of its own.</p>
+    <div class="row">
+      <button data-clear="cursor">Clear Cursor data</button>
+      <button data-clear="burnmeter">Clear burnmeter import</button>
+      <button data-clear="discovery">Clear captured shapes</button>
+    </div>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "burnmeter-extension",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Chrome extension: your AI coding spend this month (Cursor + burnmeter import), local only.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "zip": "sh scripts/zip.sh",
+    "icons": "python3 scripts/make-icons.py",
+    "e2e": "node scripts/e2e.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hieu10x/burnmeter-extension.git"
+  },
+  "license": "MIT",
+  "author": "Hieu Tran",
+  "devDependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}

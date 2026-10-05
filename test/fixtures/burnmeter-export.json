@@ -1,0 +1,18 @@
+{
+  "schema": "burnmeter.team/1",
+  "generated": "2025-10-05T08:00:00.000Z",
+  "prices_checked": "2025-10-01",
+  "period": { "since": "2025-09-22", "until": "2025-10-05" },
+  "developer": "dev-test",
+  "tools": ["claude-code", "codex"],
+  "total": { "cost": 60.5, "requests": 900, "input": 1, "output": 1, "cache_read": 1, "cache_write": 1 },
+  "by_day": [
+    { "day": "2025-09-29", "cost": 20 },
+    { "day": "2025-09-30", "cost": 10.25 },
+    { "day": "2025-10-01", "cost": 15 },
+    { "day": "2025-10-04", "cost": 15.25 }
+  ],
+  "by_model": [],
+  "by_project": [{ "project": "p-1a2b3c4d", "cost": 60.5 }],
+  "alerts": { "session_threshold": 25, "sessions_over": 0, "max_session_cost": 9, "day_threshold": 100, "days_over": 0, "premium_share": 0.4 }
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Burnmeter</title>
+  <link rel="stylesheet" href="../ui.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <div class="row spread">
+      <span class="muted small" id="month"></span>
+      <a href="../options/options.html" target="_blank" class="small">Settings</a>
+    </div>
+    <div class="total" id="total">$0</div>
+    <div class="muted small" id="pace"></div>
+    <div class="bar" id="bar" hidden><span></span></div>
+
+    <ul id="sources"></ul>
+    <p id="empty" class="muted small" hidden>
+      No data yet. Open your <a href="https://cursor.com/dashboard?tab=usage" target="_blank">Cursor usage page</a>
+      or import a burnmeter export below.
+    </p>
+
+    <div class="row">
+      <button id="import">Import burnmeter export…</button>
+      <input type="file" id="file" accept=".json,application/json" hidden>
+    </div>
+    <p class="muted small">Claude Code / Codex: run <code>npx burnmeter --export me.json</code>, then import the file.</p>
+    <p id="msg" class="small" hidden></p>
+
+    <footer class="small"><a id="team" target="_blank">Rolling this up for a team?</a></footer>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

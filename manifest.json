@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Burnmeter: AI coding spend",
+  "short_name": "Burnmeter",
+  "version": "0.0.1",
+  "description": "Your AI coding spend this month in one number: Cursor plus Claude Code and Codex (burnmeter import). Local only.",
+  "homepage_url": "https://github.com/hieu10x/burnmeter-extension",
+  "minimum_chrome_version": "111",
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_popup": "src/popup/popup.html", "default_icon": { "16": "icons/icon16.png", "48": "icons/icon48.png" } },
+  "options_page": "src/options/options.html",
+  "background": { "service_worker": "src/background.js", "type": "module" },
+  "permissions": ["storage", "alarms", "notifications"],
+  "host_permissions": ["https://cursor.com/*", "https://www.cursor.com/*", "https://github.com/settings/billing*"],
+  "content_scripts": [
+    {
+      "matches": ["https://cursor.com/dashboard*", "https://www.cursor.com/dashboard*", "https://github.com/settings/billing*"],
+      "js": ["src/content/hook.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://cursor.com/dashboard*", "https://www.cursor.com/dashboard*", "https://github.com/settings/billing*"],
+      "js": ["src/content/bridge.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

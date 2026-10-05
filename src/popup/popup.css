@@ -1,0 +1,10 @@
+main { width: 320px; padding: 12px 14px; }
+.total { font-size: 30px; font-weight: 650; letter-spacing: -0.5px; margin-top: 2px; }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 8px 0 2px; }
+.bar span { display: block; height: 100%; background: var(--accent); }
+.bar.over span { background: var(--bad); }
+ul { list-style: none; padding: 0; margin: 12px 0; border-top: 1px solid var(--line); }
+li { padding: 7px 0; border-bottom: 1px solid var(--line); }
+li .cost { font-variant-numeric: tabular-nums; font-weight: 600; }
+footer { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+code { font-size: 11.5px; white-space: nowrap; }

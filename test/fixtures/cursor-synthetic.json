@@ -1,0 +1,12 @@
+{
+  "_note": "SYNTHETIC fixture shaped after Cursor's documented Admin API usage events. Replace with a scrubbed real dashboard response once the discovery panel confirms the shape.",
+  "totalUsageEventsCount": 5,
+  "usageEventsDisplay": [
+    { "timestamp": "1759622400000", "model": "claude-4.5-sonnet", "kind": "USAGE_EVENT_KIND_USAGE_BASED", "tokenUsage": { "inputTokens": 12000, "outputTokens": 900, "cacheReadTokens": 40000, "totalCents": 12.5 } },
+    { "timestamp": "1759626000000", "model": "gpt-5", "kind": "USAGE_EVENT_KIND_USAGE_BASED", "tokenUsage": { "inputTokens": 8000, "outputTokens": 1200, "totalCents": 4 } },
+    { "timestamp": "1759629600000", "model": "auto", "kind": "USAGE_EVENT_KIND_INCLUDED_IN_PRO", "tokenUsage": { "inputTokens": 3000, "outputTokens": 300, "totalCents": 0 } },
+    { "timestamp": "1759633200000", "model": "claude-4.5-sonnet", "kind": "USAGE_EVENT_KIND_ERRORED_NOT_CHARGED" },
+    { "timestamp": "2025-10-05T10:00:00Z", "model": "gpt-5", "usageBasedCosts": "$0.31" }
+  ],
+  "pagination": { "page": 1, "pageSize": 100 }
+}
